@@ -1,0 +1,22 @@
+name: List Apple Teams
+
+on:
+  workflow_dispatch:
+
+jobs:
+  list:
+    runs-on: macos-10.15
+    steps:
+      - name: List Teams
+        run: |
+          set -e
+          function err {
+              echo "$1" 1>&2
+              return 1
+          }
+          [ "${APPLE_USERNAME}" ] || err "AppleUser secret is required"
+          [ "${APPLE_PASSWORD}" ] || err "ApplePassword secret is required"
+          xcrun altool --list-providers -u "${APPLE_USERNAME}" -p "${APPLE_PASSWORD}"
+        env:
+          APPLE_USERNAME: ${{ secrets.AppleUser }}
+          APPLE_PASSWORD: ${{ secrets.ApplePassword }}
