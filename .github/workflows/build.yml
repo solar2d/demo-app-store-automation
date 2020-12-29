@@ -1,0 +1,47 @@
+name: Build and Deliver
+
+on:
+  workflow_dispatch:
+    inputs:
+      AppVersion:
+        description: 'Version Name'
+        required: true
+        default: '1.0'
+      Solar2DBuild:
+        description: 'Solar2D Build Number'
+        required: true
+        default: '2023.3691'
+      Xcode:
+        description: 'Xcode Version'
+        required: true
+        default: '14.3'
+
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_${{ github.event.inputs.Xcode }}.app/Contents/Developer # this forces Xcode version
+  APP_VERSION: ${{ github.event.inputs.AppVersion }}
+  S2D_BUILD_NAME: ${{ github.event.inputs.Solar2DBuild }}
+
+
+jobs:
+  build:
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build
+        run: bash Util/build.sh
+        env:
+          CERT_PASSWORD:  ${{ secrets.CertPassword }}
+          APPLE_USERNAME: ${{ secrets.AppleUser }}
+          APPLE_PASSWORD: ${{ secrets.ApplePassword }}
+          APPLE_TEAM_ID:  ${{ secrets.AppleTeamId }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: IPA
+          path: Util/*.ipa
+      - name: Deliver
+        run: bash Util/deliver.sh
+        env:
+          APPLE_USERNAME: ${{ secrets.AppleUser }}
+          APPLE_PASSWORD: ${{ secrets.ApplePassword }}
+          APPLE_TEAM_ID:  ${{ secrets.AppleTeamId }}
