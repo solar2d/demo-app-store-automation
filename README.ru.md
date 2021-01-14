@@ -43,7 +43,7 @@
 
 ### 2. Создание идентификатора приложения
 
-1. Войдите в веб-портал разработчика Apple: [http://developer.apple.com/account/] (http://developer.apple.com/account/)
+1. Войдите в веб-портал разработчика Apple: [http://developer.apple.com/account/](http://developer.apple.com/account/)
 2. Выберите «Certificates, Identifiers & Profiles»
 3. На боковой панели выберите «Identifiers» и нажмите ➕, чтобы создать его
 4. Вам нужен «App ID» для типа «App»
@@ -55,7 +55,7 @@
 
 ### 3. Создание сертификата подписи
 
-Обычно в macOS эти шаги выполняются двумя щелчками во встроенной утилите KeyChain, но мы будем использовать утилиты командной строки, предоставляемые Google Cloud Shell бесплатно [⏯](https://i.imgur.com/6BoMPFi.mp4)
+Apple требует криптографической подписи приложений. Для подписи нужны две вещи: сертификат и профиль подготовки (provisioning profile). Сертификат идентифицирует команду, и создается один на все ваши приложения. Xcode автоматизирует этот процесс, но мы будем использовать утилиты командной строки, предоставляемые Google Cloud Shell бесплатно [⏯](https://i.imgur.com/6BoMPFi.mp4)
 
 1. Перейдите по этой [ссылке](https://shell.cloud.google.com/?hl=en_US&fromcloudshell=true&show=terminal). Она должен открыть для вас новый сеанс терминала
 2. Выполните: `rm -f key.key distribution*; openssl req -newkey rsa:2048 -keyout key.key -out request.csr -nodes -subj "/C=CA/ST=/L=/O=/CN=Solar2D"; cloudshell dl request.csr`
@@ -68,13 +68,17 @@
 9. Вернитесь в окно Cloud Shell и загрузите сертификат. Вы можете сделать это, перетащив файл «distribution.cer» на консоль или выбрав его через «Upload Files» в меню ⋮ (More)
 10. Запустите: `openssl x509 -inform DER -in distribution.cer -out distribution.crt && openssl pkcs12 -export -out distribution.p12 -inkey key.key -in distribution.crt && cloudshell dl distribution.p12 && rm -f key.key request.csr distribution.c*`
 11. При запросе пароля я советую использовать надежный случайно сгенерированный пароль, например, [отсюда](https://passwordsgenerator.net/?length=22&symbols=0&numbers=1&lowercase=1&uppercase=1&similar=0&ambiguous=0&client=1&autoselect=1)
-12. Сохраните пароль в репозитории GitHub как секрет `CertPassword` (мы уже добавляли секреты [выше](# secret-create)). Вам также понадобится этот пароль если вы решите использовать сертификат на настоящем маке
+12. Сохраните пароль в репозитории GitHub как секрет `CertPassword` (мы уже добавляли секреты [выше](#secret-create)). Вам также понадобится этот пароль если вы решите использовать сертификат на настоящем маке
 13. Скачайте пакет p12, содержащий зашифрованный сертификат и ключ подписи
 14. В репозитории GitHub перейдите в раздел «Code», затем щелкните каталог «Util»
 15. Нажмите кнопку «Add file» и выберите «Upload files»
 16. Выберите загруженный файл «distribution.p12» и нажмите кнопку «Commit changes»
 
+В ваших последующих проектах сразу переходите к пункту 12 и переиспользуйте пароль и файл `distribution.p12`.  
+
 ### 4. Создание профиля подготовки (provisioning profile)
+
+Вторая часть необходимая для подписи приложения это профиль подготовки. Он идентифицирует приложение и его возможности, то есть создается для каждого приложения отдельно.
 
 1. Перейдите на [портал разработчика Apple](https://developer.apple.com/account/resources/profiles/list), выберите «Profiles» и нажмите ➕
 2. Выберите «App Store» в разделе «Distribution»
@@ -86,7 +90,7 @@
 
 ### 5. Создание приложений в App Store
 
-Нам нужно создать приложение в AppStore чтобы загружать и тестировать его
+Нам нужно создать приложение в App Store чтобы загружать и тестировать его
 
 1. Перейдите на сайт App Store Connect: [https://appstoreconnect.apple.com/](https://appstoreconnect.apple.com/)
 2. Войдите в систему, прочтите и примите все пользовательские соглашения

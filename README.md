@@ -55,7 +55,7 @@ Here is a quick summary of what we are about to do:
 
 ### 3. Creating a signing certificate
 
-Usually on macOS these steps are done with two clicks in the built-in Keychain utility, but we will instead use command line utilities provided for free by Google Cloud Shell. [⏯](https://i.imgur.com/6BoMPFi.mp4)
+Apple requires applications to be cryptographically signed. To do that you need two things: certificate and provisioning profile. Certificate identify your team and created created per account (same certificate is shared for all your projects). Xcode automates this process, but we will instead use command line utilities provided for free by Google Cloud Shell. [⏯](https://i.imgur.com/6BoMPFi.mp4)
 
 1. Follow this: [link](https://shell.cloud.google.com/?hl=en_US&fromcloudshell=true&show=terminal). It should open a new terminal session for you.
 2. Run: `rm -f key.key distribution*; openssl req -newkey rsa:2048 -keyout key.key -out request.csr -nodes -subj "/C=CA/ST=/L=/O=/CN=Solar2D"; cloudshell dl request.csr`
@@ -74,7 +74,11 @@ Usually on macOS these steps are done with two clicks in the built-in Keychain u
 15. Press the "Add file" button and select "Upload files".
 16. Select the downloaded "distribution.p12" file and click the "Commit changes" button.
 
+In your next project jump right to step 12 and reuse this password and `distribution.p12` file.
+
 ### 4. Creating a provisioning profile
+
+Second part involved in signing is a provisioning profile. It identifies your application and its capabilities, so it has to be created for each project individually.
 
 1. Head to [Developer Portal](https://developer.apple.com/account/resources/profiles/list), select "Profiles" and click ➕ to create one.
 2. Select "App Store" from the Distribution section.
