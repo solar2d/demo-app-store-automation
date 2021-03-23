@@ -10,11 +10,11 @@ on:
       Solar2DBuild:
         description: 'Solar2D Build Number'
         required: true
-        default: '2020.3635'
+        default: '2021.3642'
       Xcode:
         description: 'Xcode Version'
         required: true
-        default: '12.3'
+        default: '12.4'
 
 
 env:
