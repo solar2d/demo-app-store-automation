@@ -35,3 +35,5 @@ jobs:
           APPLE_USERNAME: ${{ secrets.AppleUser }}
           APPLE_PASSWORD: ${{ secrets.ApplePassword }}
           APPLE_TEAM_ID:  ${{ secrets.AppleTeamId }}
+          FTP_URL:  ${{ secrets.FTPURL }}
+          FTP_USER:  ${{ secrets.FTPUser }}

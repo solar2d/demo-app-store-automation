@@ -23,19 +23,20 @@ Here is a quick summary of what we are about to do:
 1. Log in to [GitHub](http://github.com/) and press the ➕ button in the top right corner, then select "Import repository". We import the repository instead of forking it so that there's an option to set your repository to private. GitHub forks of public repositories can only be set to public. [⏯](https://i.imgur.com/btddTj3.gif)
 2. Paste the clone url: `https://github.com/solar2d/demo-app-store-automation.git`, pick a name for your repo, (e.g. "Solar2Demo"), and choose a visibility. This particular project does not contain any unencrypted sensitive information but if you plan to extend it, make it private. You can change the visibility later.
 3. In your repo press "⚙ Settings" in the menu bar and pick "Secrets" in the sidebar.
-4. Press "<a name="secret-create">New Repository Secret</a>" and type the following Name and Value pairs into their corresponding fields, clicking "Add secret" for each. [⏯](https://i.imgur.com/yLcgLO6.gif):
+4. Skip to the [next section](#2-creating-an-app-id) if doing FTP upload instead of app store deployment
+5. Press "<a name="secret-create">New Repository Secret</a>" and type the following Name and Value pairs into their corresponding fields, clicking "Add secret" for each. [⏯](https://i.imgur.com/yLcgLO6.gif):
     1. Name: `AppleUser`</br>
        Value: Your Apple ID user email.
     2. Name: `ApplePassword`</br>
        Value: Your Apple ID password. Most likely you have two-factor authentication set up, in which case don't use your actual password; Head to [https://appleid.apple.com/](https://appleid.apple.com/account/manage) and log in, generate an "app-specific password" to use instead.
-5. If your Apple Account is enrolled in the development program as part of a team then you have to specify an `AppleTeamId` secret. This step is otherwise optional. [⏯](https://i.imgur.com/QEvOSJo.gif)
+6. If your Apple Account is enrolled in the development program as part of a team then you have to specify an `AppleTeamId` secret. This step is otherwise optional. [⏯](https://i.imgur.com/QEvOSJo.gif)
     1. Click on "Actions" in the menu bar and select "List Apple Teams" from the sidebar.
     2. Click on the "Run Workflow" button and confirm by clicking the green button.
     3. Wait a moment for the workflow to appear on the list. After some time, the symbol next to it should become a check mark ✓. Click on "List Apple Teams" near the check mark.
     4. Click "list" in the sidebar and then "List Teams" from the main page area. This should expand an ASCII table.
     5. Locate the desired team short name from the ProviderShortname column and save it as `AppleTeamId` in "Settings" → "Secrets".
     6. This action log can contain some sensitive information, such as your name, accessible by anyone who has access to the repo, so I recommend deleting it. To do that, head back to the Actions tab and in the main page area click on the ⋯ button next to "List Apple Teams". Run and select "Delete workflow run". [⏯](https://i.imgur.com/KSyEKI7.gif)
-6. You may want to edit your app name. For that:
+7. You may want to edit your app name. For that:
     1. Click on "Code" in the menu bar, and navigate to the "Util" directory.
     2. Click on the "recipe.lua" file and then the ✎ pencil button to edit it.
     3. Change the name in quotes, (currently "Solar2Demo"), in the editor and click the "Commit changes" button to save the file.
@@ -90,7 +91,7 @@ Second part involved in signing is a provisioning profile. It identifies your ap
 
 ### 5. Creating an App listing
 
-We have to create an App listing in order to upload and test the app.
+We have to create an App listing in order to upload and test the app. If you would rather upload the ipa to an ftp server got to section [Setting up FTP upload](#setting-up-ftp-upload) and skip the next few sections.
 
 1. Head to the App Store Connect website: [https://appstoreconnect.apple.com/](https://appstoreconnect.apple.com/)
 2. Log in, read, and accept any user agreements.
@@ -147,6 +148,30 @@ When the build process is complete, you will get an email and/or push notificati
 With repository and TestFlight already set up, all you have to do is push your code, navigate to "Build and Deliver" in your repo Actions, and run the workflow.
 
 Then wait for a notification and use TestFlight to get the update.
+
+# Setting up FTP upload
+
+The ipa is upload using this command `curl -T Util/$fileName ${FTP_URL}/$(date +%Y-%m-%dT%H:%M:%S)-$fileName --user ${FTP_USER}` notice the / after the `${FTP_URL}` variable and the `${FTP_USER}` as the --user argument.
+
+1. Press New Repository Secret and type the following Name and Value pairs into their corresponding fields, clicking "Add secret" for each. [⏯](https://i.imgur.com/yLcgLO6.gif):
+    1. Name: `FTPURL`</br>
+       Value: Your FTP server URL. Eg. `ftp://your-ftp-server.com/coron-builds/project`
+       Notice the inclusion of the sub folder and the lack of trailing slash
+    2. Name: `FTPUser`</br>
+       Value: The argument to pass to the upload command. Eg. `client-id:client-secret`
+
+
+## Quick check-up
+
+When all is done you should have the following to properly do ftp upload:
+
+- 4 Secrets in GitHub repository settings [⏯](https://i.imgur.com/zB92Fjr.png):
+    - [x] `FTPURL`
+    - [x] `FTPUser`
+    - [x] `CertPassword`
+- 2 files replaced in `Util` directory [⏯](https://i.imgur.com/6b9xcZS.png):
+    - [x] `Util/distribution.p12`
+    - [x] `Util/distribution.mobileprovision`
 
 # What's next
 

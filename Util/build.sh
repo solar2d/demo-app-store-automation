@@ -17,8 +17,22 @@ S2D_BUILD_NUMBER="$(echo "$S2D_BUILD_NAME." | cut -d. -f2 )"
 [ "${S2D_BUILD_NAME}" ] || err "Solar2DBuild, required action parameter is not set"
 [ "${S2D_BUILD_NUMBER}" ] || err "Solar2DBuild, required action parameter has invalid format (i.e. 2020.3635)"
 [ "${CERT_PASSWORD}" ] || err "CertPassword secret is required"
-[ "${APPLE_USERNAME}" ] || err "AppleUser secret is required"
-[ "${APPLE_PASSWORD}" ] || err "ApplePassword secret is required"
+
+if [ "${FTP_URL}" ] 
+then
+    [ "${FTP_USER}" ] || err "FTPUser secret is required"
+else
+    if [ "${APPLE_USERNAME}" ] 
+    then
+        [ "${APPLE_PASSWORD}" ] || err "ApplePassword secret is required"
+    else
+        if  [ ! "${APPLE_USERNAME}" -a  ! "${FTP_URL}" ]
+        then
+        err "Either ApplePassword secret and AppleUser secret are required or FTPUser and FTPURL secrets are requires"
+        fi
+    fi
+fi
+
 [ "${APPLE_TEAM_ID}" ] || echo "Warning AppleTeamId secret is not set. It is optional but may cause errors. To get your team ID run List Apple Teams workflow"
 
 # Setting op code signing only on CI not to screw with local Keychain if run on own machine
@@ -55,6 +69,12 @@ if [ "${APPLE_TEAM_ID}" ]
 then
     xcrun iTMSTransporter -m upload -assetFile Util/*.ipa  -u "${APPLE_USERNAME}" -p "${APPLE_PASSWORD}" -asc_provider "${APPLE_TEAM_ID}"
 else
-    xcrun iTMSTransporter -m upload -assetFile Util/*.ipa  -u "${APPLE_USERNAME}" -p "${APPLE_PASSWORD}"
+    if [ "${FTP_URL}" ]
+    then
+        fileName=$(ls Util/ | grep .ipa | head -1) 
+        curl -T Util/$fileName ${FTP_URL}/$(date +%Y-%m-%dT%H:%M:%S)-$fileName --user ${FTP_USER}
+    else
+        xcrun iTMSTransporter -m upload -assetFile Util/*.ipa  -u "${APPLE_USERNAME}" -p "${APPLE_PASSWORD}"
+    fi
 fi
 )
