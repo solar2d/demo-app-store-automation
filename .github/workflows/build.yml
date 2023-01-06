@@ -10,11 +10,11 @@ on:
       Solar2DBuild:
         description: 'Solar2D Build Number'
         required: true
-        default: '2021.3660'
+        default: '2022.3685'
       Xcode:
         description: 'Xcode Version'
         required: true
-        default: '13.1'
+        default: '14.2'
 
 
 env:
@@ -25,7 +25,7 @@ env:
 
 jobs:
   build:
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
       - uses: actions/checkout@v2
       - name: Build and Deliver
