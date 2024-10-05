@@ -66,7 +66,7 @@ Apple requires applications to be cryptographically signed. To do that you need 
 7. Hit "Choose File" and select the "request.csr" file we just downloaded.
 8. Hit "Create" and then "Download" to get the "distribution.cer" certificate file.
 9. Return to the Cloud Shell window and upload the certificate. You can do this by dragging and dropping the "distribution.cer" file to the console or by selecting it via "Upload Files" in the ⋮ (More) menu.
-10. Run: `openssl x509 -inform DER -in distribution.cer -out distribution.crt && openssl pkcs12 -export -out distribution.p12 -inkey key.key -in distribution.crt && cloudshell dl distribution.p12 && rm -f key.key request.csr distribution.c*`
+10. Run: `openssl x509 -legacy -inform DER -in distribution.cer -out distribution.crt && openssl pkcs12 -legacy -export -out distribution.p12 -inkey key.key -in distribution.crt && cloudshell dl distribution.p12 && rm -f key.key request.csr distribution.c*`
 11. When prompted for a password I suggest using a strong [randomly generated password](https://passwordsgenerator.net/?length=22&symbols=0&numbers=1&lowercase=1&uppercase=1&similar=0&ambiguous=0&client=1&autoselect=1).
 12. Save the password in your GitHub repo as `CertPassword` secret, (we added other secrets in the [previous](#secret-create) section). You will also need this password if you decide to use an actual Mac and import the certificate there.
 13. Accept the p12 bundle, containing encrypted signing certificates.
